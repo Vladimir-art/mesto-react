@@ -8,10 +8,8 @@
 .profile__information:hover .profile__background {
   cursor: pointer;
   opacity: 1;
-  transition: .1s linear;
 }
 
 .profile__information:hover .profile__avatar {
   opacity: .3;
-  transition: .1s linear;
 }

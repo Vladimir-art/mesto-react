@@ -12,10 +12,10 @@
   right: 15px;
   width: 18px;
   height: 19px;
+  transition: all .2s ease;
 }
 
 .element__trash:hover {
   cursor: pointer;
   opacity: .6;
-  transition: .2s linear ease-in-out;
 }

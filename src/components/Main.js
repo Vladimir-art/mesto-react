@@ -25,7 +25,7 @@ function Main(props) {
           <div className="profile__cover">
             <div className="profile__information">
               <figure className="profile__background" onClick={props.onEditAvatar}></figure> {/*при клике на аву меняем стейт на true и передем в компонент App*/}
-              <img className="profile__avatar" src={currentUser.avatar} alt="Жак-Ив Кусто" />
+              <img className="profile__avatar" src={currentUser.avatar} alt={currentUser.name} />
             </div>
             <div className="profile__info">
               <div className="profile__reg">
@@ -39,9 +39,9 @@ function Main(props) {
         </section>
 
         <section className="elements"> {/*передаем в Card информацию о каждой карточке, приcваиваем каждой карточке key и передаем ф-цию по смене флага при нажатии на картинку*/}
-          {cards.map((item, index) => {
+          {cards.map((item) => {
             return (
-              <Card card={item} key={index} onCardClick={props.onCardClick} />
+              <Card card={item} key={item._id} onCardClick={props.onCardClick} currentUser={currentUser} />
             );
           })}
         </section>
