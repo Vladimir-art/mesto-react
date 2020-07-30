@@ -2,7 +2,11 @@ import React from 'react';
 
 function Card(props) {
 
-  function handleClick() {
+  function handleDeleteClick(e) {
+    props.onCardDelete(props.card, e.target.parentElement);
+  }
+
+  function handleClick(e) {
     props.onCardClick(props.card);
   }
 
@@ -32,7 +36,7 @@ function Card(props) {
             <span className="element__count"> {props.card.likes.length > 0 ? `${props.card.likes.length}` : 0} </span>
           </div>
         </div>
-        <button className={cardDeleteButtonClassName} type="button"></button>
+        <button className={cardDeleteButtonClassName} type="button" onClick={handleDeleteClick}></button>
       </div>
     </>
   )
