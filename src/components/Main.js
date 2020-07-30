@@ -8,6 +8,33 @@ function Main(props) {
   const [cards, setCards] = React.useState([]);//создает стейт из пустого массива (в нем будет хранится массив карточек)
   const currentUser = React.useContext(CurrentUserContext); //получаем объект о пользвателе из контекста
 
+  function newCards(card, newCard) {
+    const newCards = cards.map((c) => c._id === card._id ? newCard : c);// Формируем новый массив на основе имеющегося, подставляя в него новую карточку
+    //проверяет если id предыдущей карточки равен id полученной при PUT-запросе, то создавай новую карточку из запроса иначе оставляй старую
+    return setCards(newCards);// Обновляем стейт
+  }
+
+  function handleCardLike(card) {
+    // Снова проверяем, есть ли уже лайк на этой карточке
+    const isLiked = card.likes.some(item => item._id === currentUser._id);
+
+    if (!isLiked) {
+      api.putLike(`/cards/likes/${card._id}`).then((newCard) => { // Отправляем запрос в API и получаем обновлённые данные карточки
+        newCards(card, newCard);
+      })
+      .catch((err) => {
+        console.log(`Упс, произошла ошибка: ${err}`);
+      });
+    } else {
+      api.deleteCard(`/cards/likes/${card._id}`).then((newCard) => {
+        newCards(card, newCard);
+      })
+      .catch((err) => {
+        console.log(`Упс, произошла ошибка: ${err}`);
+      });
+    }
+  }
+
   React.useEffect(() => {
     api.getInitialCards('/cards') //отправляем запрос на сервер и получаем массив карточек
       .then((array) => {
@@ -41,7 +68,7 @@ function Main(props) {
         <section className="elements"> {/*передаем в Card информацию о каждой карточке, приcваиваем каждой карточке key и передаем ф-цию по смене флага при нажатии на картинку*/}
           {cards.map((item) => {
             return (
-              <Card card={item} key={item._id} onCardClick={props.onCardClick} currentUser={currentUser} />
+              <Card card={item} key={item._id} onCardClick={props.onCardClick} currentUser={currentUser} onCardLike={handleCardLike} />
             );
           })}
         </section>

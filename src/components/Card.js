@@ -6,9 +6,13 @@ function Card(props) {
     props.onCardClick(props.card);
   }
 
+  function handleLikeClick() {
+    props.onCardLike(props.card);
+  }
+
   const isOwn = props.card.owner._id === props.currentUser._id; // Определяем, являемся ли мы владельцем текущей карточки
   const cardDeleteButtonClassName = ( // Создаём переменную, которую после зададим в `className` для кнопки удаления
-    `${isOwn ? 'element__trash' : 'element__trash_hidden'}`
+    `element__trash ${isOwn ? '' : 'element__trash_hidden'}`
   );
 
 
@@ -24,7 +28,7 @@ function Card(props) {
         <div className="element__places">
           <h2 className="element__place">{props.card.name}</h2>
           <div className="element__likes">
-            <button className={cardLikeButtonClassName} type="button"></button>
+            <button className={cardLikeButtonClassName} type="button" onClick={handleLikeClick}></button>
             <span className="element__count"> {props.card.likes.length > 0 ? `${props.card.likes.length}` : 0} </span>
           </div>
         </div>
