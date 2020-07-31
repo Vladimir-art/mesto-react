@@ -5,7 +5,7 @@ function PopupWithForm(props) {
   return (
     <>
       <section className={`popup popup__${props.name} ${props.isOpen && 'popup_opened'}`}>
-        <form className={`popup-container popup-container__${props.name}`} name="form" method="POST" action="#" noValidate>
+        <form className={`popup-container popup-container__${props.name}`} name="form" method="POST" action="#" onSubmit={props.onSubmit} noValidate>
           <h2 className="popup-container__text">{props.title}</h2>
           <fieldset className="popup-container__info">
             {props.children}

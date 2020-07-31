@@ -37,8 +37,8 @@ class Api {
     return this._fetch(url, {
       method: 'PATCH',
       body: JSON.stringify({
-        name: `${data.author}`,
-        about: `${data.job}`
+        name: `${data.name}`,
+        about: `${data.about}`
       })
     })
   }

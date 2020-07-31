@@ -3,6 +3,7 @@ import logo from '../images/mesto-logo.svg';
 import Header from './Header';
 import Main from './Main';
 import PopupWithForm from './PopupWithForm';
+import EditProfilePopup from './EditProfilePopup';
 import ImagePopup from './ImagePopup';
 import Footer from './Footer';
 import { api } from '../utils/Api';
@@ -53,6 +54,17 @@ function App() {
     setSelectedCard(false);
   }
 
+  function handleUpdateUser(data) {
+    api.sendUserInfo('/users/me', data)
+      .then((data) => {
+        setCurrentUser(data);
+        closeAllPopups();
+      })
+      .catch((err) => {
+        console.log(`Упс, произошла ошибка: ${err}`);
+      });
+  }
+
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
@@ -64,14 +76,8 @@ function App() {
           onCardClick={handleCardClick} //ф-ция по клике на картинку
         />
         {/*в каждом компоненте PopupWithForm передаем пропс isOpen, который есть условие того что конкретное поле объекта true и если оно верно, передаем новый класс по открытию формы*/}
-        <PopupWithForm title="Редактировать профиль" name="edit-form" buttonText="Сохранить" isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} children={
-          <>
-            <input className="popup-container__infoform popup-container__infoform_author" id="author-input" name="author" defaultValue="имя" type="text" placeholder="Автор" minLength="2" maxLength="40" pattern="[A-Za-zА-ЯЁа-яё -]{1,}" required />
-            <span className="popup-container__input-error" id="author-input-error">Вы пропустили это поле.</span>
-            <input className="popup-container__infoform popup-container__infoform_aboutyourself" id="job-input" name="job" defaultValue="деятельность" type="text" placeholder="О себе" minLength="2" maxLength="200" required />
-            <span className="popup-container__input-error" id="job-input-error">Вы пропустили это поле.</span>
-          </>
-        } />
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+
         <PopupWithForm title="Новое место" name="add-place" buttonText="Создать" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} children={
           <>
             <input className="popup-container__infoform popup-container__infoform_place-name" id="place-input" name="name" type="text" placeholder="Название" minLength="1" maxLength="30" required />
