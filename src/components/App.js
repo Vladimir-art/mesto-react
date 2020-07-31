@@ -4,6 +4,7 @@ import Header from './Header';
 import Main from './Main';
 import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
 import ImagePopup from './ImagePopup';
 import Footer from './Footer';
 import { api } from '../utils/Api';
@@ -54,14 +55,28 @@ function App() {
     setSelectedCard(false);
   }
 
-  function handleUpdateUser(data) {
+  function handleUpdateUser(e, data) {
     api.sendUserInfo('/users/me', data)
-      .then((data) => {
-        setCurrentUser(data);
+      .then((newData) => {
+        setCurrentUser(newData);
         closeAllPopups();
       })
       .catch((err) => {
         console.log(`Упс, произошла ошибка: ${err}`);
+      });
+  }
+
+  function handleUpdateAvatar(e, data) {
+    api.changeAvatar('/users/me/avatar', data)
+      .then((newData) => {
+        setCurrentUser(newData);
+        closeAllPopups();
+      })
+      .catch((err) => {
+        console.log(`Упс, произошла ошибка: ${err}`);
+      })
+      .finally(() => {
+        e.reset();
       });
   }
 
@@ -86,12 +101,9 @@ function App() {
             <span className="popup-container__input-error" id="link-input-error"></span>
           </>
         } />
-        <PopupWithForm title="Обновить аватар" name="avatar" buttonText="Сохранить" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} children={
-          <>
-            <input className="popup-container__infoform popup-container__infoform_avatar-link" id="avatar-input" name="avatar" type="url" placeholder="Введите ссылку" required />
-            <span className="popup-container__input-error" id="avatar-input-error"></span>
-          </>
-        } />
+
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+
         <PopupWithForm title="Вы уверены?" name="verification" buttonText="Да" />
         {/*в ImagePopup передаем объект о нажатой карточке (card), условие как в PopupWithForm и ф-цию по смене стейта по нажатию на крестик*/}
         <ImagePopup card={showImage} isOpen={selectedCard} onClose={closeAllPopups} />
