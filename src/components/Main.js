@@ -5,39 +5,7 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function Main(props) {
 
-  const [cards, setCards] = React.useState([]);//создает стейт из пустого массива (в нем будет хранится массив карточек)
   const currentUser = React.useContext(CurrentUserContext); //получаем объект о пользвателе из контекста
-
-  function handleCardLike(card) {
-    // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some(item => item._id === currentUser._id);
-
-    api.changeLikeCardStatus(`/cards/likes/${card._id}`, isLiked)
-      .then((newCard) => {
-        const newCards = cards.map((c) => c._id === card._id ? newCard : c);// Формируем новый массив на основе имеющегося, подставляя в него новую карточку
-        //проверяет если id предыдущей карточки равен id полученной при PUT-запросе, то создавай новую карточку из запроса иначе оставляй старую
-        setCards(newCards);// Обновляем стейт
-      })
-  }
-
-  function handleCardDelete(card, e) {
-    api.deleteCard(`/cards/${card._id}`)
-      .then((data) => {
-        e.remove();
-        const newCards = cards.filter((c) => c._id !== data._id);
-        setCards(newCards);
-      })
-  }
-
-  React.useEffect(() => {
-    api.getInitialCards('/cards') //отправляем запрос на сервер и получаем массив карточек
-      .then((array) => {
-        setCards(array); //меняем стейт cards
-      })
-      .catch((err) => {
-        console.log(`Упс, произошла ошибка: ${err}`);
-      });
-  }, []);
 
   return (
     <>
@@ -60,9 +28,14 @@ function Main(props) {
         </section>
 
         <section className="elements"> {/*передаем в Card информацию о каждой карточке, приcваиваем каждой карточке key и передаем ф-цию по смене флага при нажатии на картинку*/}
-          {cards.map((item) => {
+          {props.cards.map((item) => {
             return (
-              <Card card={item} key={item._id} onCardClick={props.onCardClick} currentUser={currentUser} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />
+              <Card card={item}
+                key={item._id}
+                onCardClick={props.onCardClick}
+                currentUser={currentUser}
+                onCardLike={props.onCardLike}
+                onCardDelete={props.onCardDelete} />
             );
           })}
         </section>
