@@ -3,29 +3,15 @@ import PopupWithForm from './PopupWithForm';
 
 function AddPlacePopup(props) {
 
-  const [name, setName] = React.useState('');
-  const [link, setLink] = React.useState('');
-
-  function handleChangeName(e) {
-    setName(e.target.value);
-  }
-
-  function handleChangeLink(e) {
-    setLink(e.target.value);
-  }
+  const inputName = React.useRef();
+  const inputLink = React.useRef();
 
   function handleSubmit(e) {
     e.preventDefault();
-    props.onAddPlace({
-      name: name,
-      link: link
+    props.onAddPlace(e.target, {
+      name: inputName.current.value,
+      link: inputLink.current.value
     })
-  }
-
-  function resetInput() {
-    props.onClose();
-    setName('');
-    setLink('');
   }
 
   return (
@@ -35,29 +21,29 @@ function AddPlacePopup(props) {
       name="add-place"
       buttonText="Создать"
       isOpen={props.isOpen}
-      onClose={resetInput}
+      onClose={props.onClose}
       children={
         <>
           <input
             className="popup-container__infoform popup-container__infoform_place-name"
             id="place-input"
-            defaultValue={name}
+            defaultValue=""
             name="name"
             type="text"
             placeholder="Название"
             minLength="1" maxLength="30"
-            onChange={handleChangeName}
+            ref={inputName}
             required
           />
           <span className="popup-container__input-error" id="place-input-error">Вы пропустили это поле.</span>
           <input
             className="popup-container__infoform popup-container__infoform_place-link"
             id="link-input"
-            defaultValue={link}
+            defaultValue=""
             name="link"
             type="url"
             placeholder="Ссылка на картинку"
-            onChange={handleChangeLink}
+            ref={inputLink}
             required
           />
           <span className="popup-container__input-error" id="link-input-error"></span>

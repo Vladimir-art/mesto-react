@@ -110,7 +110,7 @@ function App() {
       });
   }
 
-  function handleAddPlace(data) {
+  function handleAddPlace(e, data) {
     api.sendPlaceCard('/cards', data)
       .then((newCard) => {
         setCards([ ...cards, newCard]);
@@ -119,6 +119,9 @@ function App() {
       .catch((err) => {
         console.log(`Упс, произошла ошибка: ${err}`);
       })
+      .finally(() => {
+        e.reset();
+      });
   }
 
   return (
