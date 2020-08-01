@@ -2,12 +2,19 @@ import React from 'react';
 
 function Card(props) {
 
+  const [error, setError] = React.useState(false); //стейт для проверки правильности ссылки
+
+  function errorLoadImage(e) {
+    e.target.setAttribute('src', 'https://image.freepik.com/free-vector/404_115790-50.jpg'); //усди ссылка неверна, загрузит стандартную картинку
+    setError(true); //поменяет стейт
+  }
+
   function handleDeleteClick(e) {
-    props.onCardDelete(props.card, e.target.parentElement);
+    props.onTrashClick(props.card, e.target.parentElement);
   }
 
   function handleClick(e) {
-    props.onCardClick(props.card);
+    !error && props.onCardClick(props.card); //если нет ошибки в картинке, то можно по ней кликать
   }
 
   function handleLikeClick() {
@@ -25,15 +32,27 @@ function Card(props) {
     `element__button ${isLiked ? 'element__button_like-active' : ''}`
   );
 
+  const cardLikeButtonHidden = ( //если есть ошибка то скрываем кнопку сердечко
+    `${error && 'element__button_hidden'}`
+  );
+
+  const errorImageName = ( //если нет ошибки, то показываем текст, иначе пишем свой
+    `${!error ? `${props.card.name}` : 'Ошибка...'}`
+  );
+
+  const errorCountLike = ( //если есть ошибка, то скрываем кол-во лайков
+    `element__count ${error && 'element__count_hidden'}`
+  );
+
   return (
     <>
       <div className="element">
-        <img className="element__image" alt="Изображение" src={props.card.link} onClick={handleClick} /> {/*при клике вызывает ф-цию по смене стейта и передает данные о карточке в App*/}
+        <img className="element__image" alt="Изображение" src={props.card.link} onClick={handleClick} onError={errorLoadImage} /> {/*при клике вызывает ф-цию по смене стейта и передает данные о карточке в App*/}
         <div className="element__places">
-          <h2 className="element__place">{props.card.name}</h2>
+          <h2 className="element__place">{errorImageName}</h2>
           <div className="element__likes">
-            <button className={cardLikeButtonClassName} type="button" onClick={handleLikeClick}></button>
-            <span className="element__count"> {props.card.likes.length > 0 ? `${props.card.likes.length}` : 0} </span>
+            <button className={`${cardLikeButtonClassName} ${cardLikeButtonHidden}`} type="button" onClick={handleLikeClick}></button>
+            <span className={errorCountLike}> {props.card.likes.length > 0 ? `${props.card.likes.length}` : 0} </span>
           </div>
         </div>
         <button className={cardDeleteButtonClassName} type="button" onClick={handleDeleteClick}></button>

@@ -72,13 +72,6 @@ class Api {
     })
   }
 
-  // //поставить лайк и обновить массив лайков
-  // putLike(url) {
-  //   return this._fetch(url, {
-  //     method: 'PUT'
-  //   })
-  // }
-
   //поменять аватар
   changeAvatar(url, data) {
     return this._fetch(url, {

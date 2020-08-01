@@ -35,7 +35,7 @@ function Main(props) {
                 onCardClick={props.onCardClick}
                 currentUser={currentUser}
                 onCardLike={props.onCardLike}
-                onCardDelete={props.onCardDelete} />
+                onTrashClick={props.onTrashClick} />
             );
           })}
         </section>

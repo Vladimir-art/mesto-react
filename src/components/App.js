@@ -6,6 +6,7 @@ import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import EditVerificationPopup from './EditVerificationPopup';
 import ImagePopup from './ImagePopup';
 import Footer from './Footer';
 import { api } from '../utils/Api';
@@ -16,6 +17,7 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [isEditVerificationPopupOpen, setIsEditVerificationPopupOpen] = React.useState({ state: false, cardId: '', elem: {} });
   const [selectedCard, setSelectedCard] = React.useState(false);
   const [showImage, setShowImage] = React.useState({});
 
@@ -56,12 +58,17 @@ function App() {
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
   };
+
+  function handleVerificationClick(data, e) {
+    setIsEditVerificationPopupOpen({ state: true, cardId: `${data._id}`, elem: e });
+  };
   //закрывает все попапы на крестик
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setSelectedCard(false);
+    setIsEditVerificationPopupOpen({ state: false, cardId: '', elem: {} });
   }
 
   function handleCardLike(card) {
@@ -76,12 +83,13 @@ function App() {
       })
   }
 
-  function handleCardDelete(card, e) {
-    api.deleteCard(`/cards/${card._id}`)
+  function handleCardDelete(cardId, e) {
+    api.deleteCard(`/cards/${cardId}`)
       .then((data) => {
-        e.remove();
+        isEditVerificationPopupOpen.elem.remove();
         const newCards = cards.filter((c) => c._id !== data._id);
         setCards(newCards);
+        closeAllPopups();
       })
   }
 
@@ -113,7 +121,7 @@ function App() {
   function handleAddPlace(e, data) {
     api.sendPlaceCard('/cards', data)
       .then((newCard) => {
-        setCards([ ...cards, newCard]);
+        setCards([...cards, newCard]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -133,9 +141,9 @@ function App() {
           onAddPlace={handleAddPlaceClick} // передает ф-цию по клике на кнопку добавления нового места
           onEditAvatar={handleEditAvatarClick} //ф-ция по клику на смену аватара
           onCardClick={handleCardClick} //ф-ция по клике на картинку
+          onTrashClick={handleVerificationClick}
           cards={cards}
           onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
         />
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
 
@@ -143,7 +151,12 @@ function App() {
 
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
 
-        <PopupWithForm title="Вы уверены?" name="verification" buttonText="Да" />
+        <EditVerificationPopup
+          cardId={isEditVerificationPopupOpen.cardId}
+          isOpen={isEditVerificationPopupOpen.state}
+          onClose={closeAllPopups}
+          onCardDelete={handleCardDelete}
+        />
         {/*в ImagePopup передаем объект о нажатой карточке (card), условие как в PopupWithForm и ф-цию по смене стейта по нажатию на крестик*/}
         <ImagePopup card={showImage} isOpen={selectedCard} onClose={closeAllPopups} />
         <Footer />
