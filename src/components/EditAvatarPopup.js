@@ -7,11 +7,15 @@ function EditAvatarPopup(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-
+    props.onChangeText();
     props.onUpdateAvatar(e.target, {
       avatar: inputRef.current.value,
     });
   }
+
+  const handleButtonText = (
+    `${props.isText ? 'Сохранение...' : 'Сохранить'}`
+  )
 
   return (
     <PopupWithForm
@@ -19,7 +23,7 @@ function EditAvatarPopup(props) {
       title="Обновить аватар"
       defaultValue=""
       name="avatar"
-      buttonText="Сохранить"
+      buttonText={handleButtonText}
       isOpen={props.isOpen}
       onClose={props.onClose}
       children={

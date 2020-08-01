@@ -20,6 +20,7 @@ function App() {
   const [isEditVerificationPopupOpen, setIsEditVerificationPopupOpen] = React.useState({ state: false, cardId: '', elem: {} });
   const [selectedCard, setSelectedCard] = React.useState(false);
   const [showImage, setShowImage] = React.useState({});
+  const [text, setText] = React.useState(false); //стейт для изменения текта при загрузке сервера
 
   const [currentUser, setCurrentUser] = React.useState({}); //получаем информацию об авторе
   const [cards, setCards] = React.useState([]);//создает стейт из пустого массива (в нем будет хранится массив карточек)
@@ -41,6 +42,9 @@ function App() {
       });
   }, []);
 
+  function changeText() {
+    setText(true);
+  }
   //функция меняет хначения при клике на картинку и передает showImage данные об этой картинке (получает из компонента ImagePopup)
   function handleCardClick(data) {
     setSelectedCard(true);
@@ -81,9 +85,12 @@ function App() {
         //проверяет если id предыдущей карточки равен id полученной при PUT-запросе, то создавай новую карточку из запроса иначе оставляй старую
         setCards(newCards);// Обновляем стейт
       })
+      .catch((err) => {
+        console.log(`Упс, произошла ошибка: ${err}`);
+      });
   }
 
-  function handleCardDelete(cardId, e) {
+  function handleCardDelete(cardId) {
     api.deleteCard(`/cards/${cardId}`)
       .then((data) => {
         isEditVerificationPopupOpen.elem.remove();
@@ -91,9 +98,15 @@ function App() {
         setCards(newCards);
         closeAllPopups();
       })
+      .catch((err) => {
+        console.log(`Упс, произошла ошибка: ${err}`);
+      })
+      .finally(() => {
+        setText(false);
+      })
   }
 
-  function handleUpdateUser(e, data) {
+  function handleUpdateUser(data) {
     api.sendUserInfo('/users/me', data)
       .then((newData) => {
         setCurrentUser(newData);
@@ -101,6 +114,9 @@ function App() {
       })
       .catch((err) => {
         console.log(`Упс, произошла ошибка: ${err}`);
+      })
+      .finally(() => {
+        setText(false);
       });
   }
 
@@ -115,6 +131,7 @@ function App() {
       })
       .finally(() => {
         e.reset();
+        setText(false);
       });
   }
 
@@ -129,6 +146,7 @@ function App() {
       })
       .finally(() => {
         e.reset();
+        setText(false);
       });
   }
 
@@ -145,20 +163,44 @@ function App() {
           cards={cards}
           onCardLike={handleCardLike}
         />
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+        <EditProfilePopup
+          isText={text}
+          onChangeText={changeText}
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}
+        />
 
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlace} />
+        <AddPlacePopup
+          isText={text}
+          onChangeText={changeText}
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlace}
+        />
 
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+        <EditAvatarPopup
+          isText={text}
+          onChangeText={changeText}
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
+        />
 
         <EditVerificationPopup
+          isText={text}
+          onChangeText={changeText}
           cardId={isEditVerificationPopupOpen.cardId}
           isOpen={isEditVerificationPopupOpen.state}
           onClose={closeAllPopups}
           onCardDelete={handleCardDelete}
         />
         {/*в ImagePopup передаем объект о нажатой карточке (card), условие как в PopupWithForm и ф-цию по смене стейта по нажатию на крестик*/}
-        <ImagePopup card={showImage} isOpen={selectedCard} onClose={closeAllPopups} />
+        <ImagePopup
+          card={showImage}
+          isOpen={selectedCard}
+          onClose={closeAllPopups}
+        />
         <Footer />
       </CurrentUserContext.Provider>
     </div>

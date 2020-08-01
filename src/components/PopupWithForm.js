@@ -2,6 +2,10 @@ import React from 'react';
 
 function PopupWithForm(props) {
 
+  const handleButtonText = (
+    `${props.isText ? 'Сохранение...' : props.buttonText}`
+  )
+
   return (
     <>
       <section className={`popup popup__${props.name} ${props.isOpen && 'popup_opened'}`}>
@@ -9,7 +13,7 @@ function PopupWithForm(props) {
           <h2 className="popup-container__text">{props.title}</h2>
           <fieldset className="popup-container__info">
             {props.children}
-            <button className="popup-container__button-add" type="submit">{props.buttonText}</button>
+            <button className="popup-container__button-add" type="submit">{handleButtonText}</button>
           </fieldset>
           <button className="popup-container__button-reset" type="reset" aria-label="Close" onClick={props.onClose}></button>
         </form>

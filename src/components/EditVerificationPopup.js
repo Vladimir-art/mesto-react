@@ -5,8 +5,13 @@ function EditVerificationPopup(props) {
 
   function handleDeleteClick(e) {
     e.preventDefault();
-    props.onCardDelete(props.cardId, e.target);
+    props.onChangeText();
+    props.onCardDelete(props.cardId);
   }
+
+  const handleButtonText = (
+    `${props.isText ? 'Сохранение...' : 'Да'}`
+  )
 
   return (
     <PopupWithForm
@@ -15,7 +20,8 @@ function EditVerificationPopup(props) {
       onClose={props.onClose}
       title="Вы уверены?"
       name="verification"
-      buttonText="Да"
+      buttonText={handleButtonText}
+      isText={props.isText}
     />
   )
 }

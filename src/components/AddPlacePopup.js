@@ -8,18 +8,23 @@ function AddPlacePopup(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
+    props.onChangeText();
     props.onAddPlace(e.target, {
       name: inputName.current.value,
       link: inputLink.current.value
     })
   }
 
+  const handleButtonText = (
+    `${props.isText ? 'Сохранение...' : 'Создать'}`
+  )
+
   return (
     <PopupWithForm
       onSubmit={handleSubmit}
       title="Новое место"
       name="add-place"
-      buttonText="Создать"
+      buttonText={handleButtonText}
       isOpen={props.isOpen}
       onClose={props.onClose}
       children={
