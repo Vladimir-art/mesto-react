@@ -5,11 +5,11 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext';
 function EditProfilePopup(props) {
 
   const currentUser = React.useContext(CurrentUserContext);
+  //реализация управляемого компонента
+  const [name, setName] = React.useState(''); //стетй с именем
+  const [description, setDescription] = React.useState(''); //стейт с деятельностью
 
-  const [name, setName] = React.useState('');
-  const [description, setDescription] = React.useState('');
-
-  React.useEffect(() => {
+  React.useEffect(() => { //меняем стейты в зависимости от контекста currentUser
     setName(currentUser.name);
     setDescription(currentUser.about);
   }, [currentUser]);
@@ -23,7 +23,7 @@ function EditProfilePopup(props) {
     });
   }
 
-  function handleChangeAuthor(e) {
+  function handleChangeAuthor(e) { //меняем стейт при каждом изменении в поле инпута
     setName(e.target.value);
   }
 
@@ -31,7 +31,7 @@ function EditProfilePopup(props) {
     setDescription(e.target.value);
   }
 
-  function resetInput() {
+  function resetInput() { //сбрасываем введенные значания инпутов при клике на крестик
     props.onClose();
     setName(currentUser.name);
     setDescription(currentUser.about);

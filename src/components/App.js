@@ -2,7 +2,6 @@ import React from 'react';
 import logo from '../images/mesto-logo.svg';
 import Header from './Header';
 import Main from './Main';
-import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
@@ -14,12 +13,12 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function App() {
 
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-  const [isEditVerificationPopupOpen, setIsEditVerificationPopupOpen] = React.useState({ state: false, cardId: '', elem: {} });
-  const [selectedCard, setSelectedCard] = React.useState(false);
-  const [showImage, setShowImage] = React.useState({});
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false); //стейт профиль
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false); //добавление нового места
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false); //смена аватара
+  const [isEditVerificationPopupOpen, setIsEditVerificationPopupOpen] = React.useState({ state: false, cardId: '', elem: {} }); //подтверждение удаления
+  const [selectedCard, setSelectedCard] = React.useState(false); //открытие картинки
+  const [showImage, setShowImage] = React.useState({}); //данные картинки
   const [text, setText] = React.useState(false); //стейт для изменения текта при загрузке сервера
 
   const [currentUser, setCurrentUser] = React.useState({}); //получаем информацию об авторе
@@ -42,7 +41,7 @@ function App() {
       });
   }, []);
 
-  function changeText() {
+  function changeText() { //смена текта при апи запросе
     setText(true);
   }
   //функция меняет хначения при клике на картинку и передает showImage данные об этой картинке (получает из компонента ImagePopup)
@@ -62,7 +61,7 @@ function App() {
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
   };
-
+  // подтверждение удаления (принимает объект карточки и форму)
   function handleVerificationClick(data, e) {
     setIsEditVerificationPopupOpen({ state: true, cardId: `${data._id}`, elem: e });
   };
@@ -75,8 +74,14 @@ function App() {
     setIsEditVerificationPopupOpen({ state: false, cardId: '', elem: {} });
   }
 
-  function overlayClick(e) {
+  function overlayClick(e) { //оверлей по клику (принимает попап)
     if (e.classList.contains('popup')) {
+      closeAllPopups();
+    }
+  }
+
+  function escClick(e) { //закрытие попара по esc (не закрывется попап с аватар и картинкой)
+    if(e.key === 'Escape') {
       closeAllPopups();
     }
   }
@@ -95,69 +100,69 @@ function App() {
         console.log(`Упс, произошла ошибка: ${err}`);
       });
   }
-
+  // запрос по удалению карточки с сервера (принимает Id карточки)
   function handleCardDelete(cardId) {
     api.deleteCard(`/cards/${cardId}`)
       .then((data) => {
-        isEditVerificationPopupOpen.elem.remove();
+        isEditVerificationPopupOpen.elem.remove(); //удаляет карточку
         const newCards = cards.filter((c) => c._id !== data._id);
-        setCards(newCards);
+        setCards(newCards); //меняет стейт с карточками
         closeAllPopups();
       })
       .catch((err) => {
         console.log(`Упс, произошла ошибка: ${err}`);
       })
       .finally(() => {
-        setText(false);
+        setText(false); //меняет текст кнопки сабмита
       })
   }
-
+  // обновляет информацию о пользователе
   function handleUpdateUser(data) {
     api.sendUserInfo('/users/me', data)
       .then((newData) => {
-        setCurrentUser(newData);
+        setCurrentUser(newData); //обновляет контекст currentUser
         closeAllPopups();
       })
       .catch((err) => {
         console.log(`Упс, произошла ошибка: ${err}`);
       })
       .finally(() => {
-        setText(false);
+        setText(false); //меняет текст кнопки сабмита
       })
   }
-
+  // обновляет аватар пользователя (принимает форму и объект с данными (имя и ссылка))
   function handleUpdateAvatar(e, data) {
     api.changeAvatar('/users/me/avatar', data)
       .then((newData) => {
-        setCurrentUser(newData);
+        setCurrentUser(newData); //обновляет контекст currentUser
         closeAllPopups();
       })
       .catch((err) => {
         console.log(`Упс, произошла ошибка: ${err}`);
       })
       .finally(() => {
-        e.reset();
-        setText(false);
+        e.reset(); //сбрасывает значения инпутов
+        setText(false); //меняет текст кнопки сабмита
       });
   }
-
+  // добавляет новую карточку (принимает форму и объект(имя и ссылка))
   function handleAddPlace(e, data) {
     api.sendPlaceCard('/cards', data)
       .then((newCard) => {
-        setCards([...cards, newCard]);
+        setCards([...cards, newCard]); //добавляет в имеющийся массив карточек новую карточку
         closeAllPopups();
       })
       .catch((err) => {
         console.log(`Упс, произошла ошибка: ${err}`);
       })
       .finally(() => {
-        e.reset();
-        setText(false);
+        e.reset(); //сбрасывает значения инпутов
+        setText(false); //меняет текст кнопки сабмита
       });
   }
 
   return (
-    <div className="page">
+    <div className="page" onKeyDown={escClick}>
       <CurrentUserContext.Provider value={currentUser}>
         <Header logo={logo} />
         <Main
@@ -205,7 +210,7 @@ function App() {
           onClose={closeAllPopups}
           onCardDelete={handleCardDelete}
         />
-        {/*в ImagePopup передаем объект о нажатой карточке (card), условие как в PopupWithForm и ф-цию по смене стейта по нажатию на крестик*/}
+
         <ImagePopup
           overlay={overlayClick}
           card={showImage}

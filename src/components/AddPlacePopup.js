@@ -3,20 +3,20 @@ import PopupWithForm from './PopupWithForm';
 
 function AddPlacePopup(props) {
 
-  const inputName = React.useRef();
-  const inputLink = React.useRef();
+  const inputName = React.useRef(); //инпут с названием карточки
+  const inputLink = React.useRef(); //иипут с ссылкой
 
   function handleSubmit(e) {
     e.preventDefault();
-    props.onChangeText();
+    props.onChangeText(); //меняем стейт текста на true
     props.onAddPlace(e.target, {
-      name: inputName.current.value,
-      link: inputLink.current.value
+      name: inputName.current.value, //передаем хначания инпутов
+      link: inputLink.current.value  //как объект в апи запрос
     })
   }
 
   const handleButtonText = (
-    `${props.isText ? 'Сохранение...' : 'Создать'}`
+    `${props.isText ? 'Сохранение...' : 'Создать'}` //если стейт текста true ...
   );
 
   function overlayClick(e) {
@@ -42,7 +42,7 @@ function AddPlacePopup(props) {
             type="text"
             placeholder="Название"
             minLength="1" maxLength="30"
-            ref={inputName}
+            ref={inputName} //получаем доступ к элементу
             required
           />
           <span className="popup-container__input-error" id="place-input-error">Вы пропустили это поле.</span>
