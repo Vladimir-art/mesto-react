@@ -75,6 +75,12 @@ function App() {
     setIsEditVerificationPopupOpen({ state: false, cardId: '', elem: {} });
   }
 
+  function overlayClick(e) {
+    if (e.classList.contains('popup')) {
+      closeAllPopups();
+    }
+  }
+
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some(item => item._id === currentUser._id);
@@ -117,7 +123,7 @@ function App() {
       })
       .finally(() => {
         setText(false);
-      });
+      })
   }
 
   function handleUpdateAvatar(e, data) {
@@ -164,6 +170,7 @@ function App() {
           onCardLike={handleCardLike}
         />
         <EditProfilePopup
+          overlay={overlayClick}
           isText={text}
           onChangeText={changeText}
           isOpen={isEditProfilePopupOpen}
@@ -172,6 +179,7 @@ function App() {
         />
 
         <AddPlacePopup
+          overlay={overlayClick}
           isText={text}
           onChangeText={changeText}
           isOpen={isAddPlacePopupOpen}
@@ -180,6 +188,7 @@ function App() {
         />
 
         <EditAvatarPopup
+          overlay={overlayClick}
           isText={text}
           onChangeText={changeText}
           isOpen={isEditAvatarPopupOpen}
@@ -188,6 +197,7 @@ function App() {
         />
 
         <EditVerificationPopup
+          overlay={overlayClick}
           isText={text}
           onChangeText={changeText}
           cardId={isEditVerificationPopupOpen.cardId}
@@ -197,6 +207,7 @@ function App() {
         />
         {/*в ImagePopup передаем объект о нажатой карточке (card), условие как в PopupWithForm и ф-цию по смене стейта по нажатию на крестик*/}
         <ImagePopup
+          overlay={overlayClick}
           card={showImage}
           isOpen={selectedCard}
           onClose={closeAllPopups}

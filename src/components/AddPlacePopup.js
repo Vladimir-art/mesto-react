@@ -17,10 +17,15 @@ function AddPlacePopup(props) {
 
   const handleButtonText = (
     `${props.isText ? 'Сохранение...' : 'Создать'}`
-  )
+  );
+
+  function overlayClick(e) {
+    props.overlay(e.target);
+  }
 
   return (
     <PopupWithForm
+      overlayClick={overlayClick}
       onSubmit={handleSubmit}
       title="Новое место"
       name="add-place"

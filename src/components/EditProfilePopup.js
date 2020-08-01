@@ -41,8 +41,13 @@ function EditProfilePopup(props) {
     `${props.isText ? 'Сохранение...' : 'Сохранить'}`
   )
 
+  function overlayClick(e) {
+    props.overlay(e.target);
+  }
+
   return (
     <PopupWithForm
+      overlayClick={overlayClick}
       onSubmit={handleSubmit}
       title="Редактировать профиль"
       name="edit-form"

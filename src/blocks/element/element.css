@@ -15,6 +15,10 @@
   background-color: #fff;
   border-radius: 10px;
   position: relative;
+  transition: all .3s ease;
 }
 
+.element:hover {
+  transform: scale(1.05);
+}
 

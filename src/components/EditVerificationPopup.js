@@ -11,10 +11,15 @@ function EditVerificationPopup(props) {
 
   const handleButtonText = (
     `${props.isText ? 'Сохранение...' : 'Да'}`
-  )
+  );
+
+  function overlayClick(e) {
+    props.overlay(e.target);
+  }
 
   return (
     <PopupWithForm
+      overlayClick={overlayClick}
       onSubmit={handleDeleteClick}
       isOpen={props.isOpen}
       onClose={props.onClose}

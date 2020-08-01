@@ -37,7 +37,7 @@ function Card(props) {
   );
 
   const errorImageName = ( //если нет ошибки, то показываем текст, иначе пишем свой
-    `${!error ? `${props.card.name}` : 'Ошибка...'}`
+    `${!error ? `${props.card.name}` : 'Упс, ошибка...'}`
   );
 
   const errorCountLike = ( //если есть ошибка, то скрываем кол-во лайков
