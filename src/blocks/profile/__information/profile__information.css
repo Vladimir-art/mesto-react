@@ -13,3 +13,9 @@
 .profile__information:hover .profile__avatar {
   opacity: .3;
 }
+
+@media screen and (max-width: 1023px) and (min-width: 320px) {
+  .profile__information {
+    margin: 0 auto;
+  }
+}
