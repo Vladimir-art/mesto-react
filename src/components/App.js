@@ -81,7 +81,7 @@ function App() {
   }
 
   function escClick(e) { //закрытие попара по esc (не закрывется попап с аватар и картинкой)
-    if(e.key === 'Escape') {
+    if (e.key === 'Escape') {
       closeAllPopups();
     }
   }
@@ -116,8 +116,10 @@ function App() {
         setText(false); //меняет текст кнопки сабмита
       })
   }
+  const [lang, setLang] = React.useState({});
   // обновляет информацию о пользователе
   function handleUpdateUser(data) {
+
     api.sendUserInfo('/users/me', data)
       .then((newData) => {
         setCurrentUser(newData); //обновляет контекст currentUser
@@ -174,32 +176,33 @@ function App() {
           cards={cards}
           onCardLike={handleCardLike}
         />
-        <EditProfilePopup
-          overlay={overlayClick}
-          isText={text}
-          onChangeText={changeText}
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser}
-        />
 
-        <AddPlacePopup
-          overlay={overlayClick}
-          isText={text}
-          onChangeText={changeText}
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlace}
-        />
+          <EditProfilePopup
+            overlay={overlayClick}
+            isText={text}
+            onChangeText={changeText}
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+          />
 
-        <EditAvatarPopup
-          overlay={overlayClick}
-          isText={text}
-          onChangeText={changeText}
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}
-        />
+          <AddPlacePopup
+            overlay={overlayClick}
+            isText={text}
+            onChangeText={changeText}
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlace}
+          />
+
+          <EditAvatarPopup
+            overlay={overlayClick}
+            isText={text}
+            onChangeText={changeText}
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+          />
 
         <EditVerificationPopup
           overlay={overlayClick}
