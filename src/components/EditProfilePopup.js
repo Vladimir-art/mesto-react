@@ -10,65 +10,33 @@ function EditProfilePopup(props) {
   //реализация управляемого компонента
   const [name, setName] = React.useState(''); //стетй с именем
   const [description, setDescription] = React.useState(''); //стейт с деятельностью
+  const [valid, setValid] = React.useState({ //стейт для валидации
+    formErrors: { author: '', job: '' }, //объект с текстом ошибок
+    authorValid: true, //валидность поля с автором
+    jobValid: true, //валидность с полем деятельности
+    formValid: true, //валидность всей формы
+  });
 
   React.useEffect(() => { //меняем стейты в зависимости от контекста currentUser
     setName(currentUser.name);
     setDescription(currentUser.about);
   }, [currentUser]);
 
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    props.onChangeText();
-    props.onUpdateUser({
-      name: name,
-      about: description
-    });
-  }
-
   function handleChangeAuthor(e) { //меняем стейт при каждом изменении в поле инпута
     setName(e.target.value);
-    // console.log(e.target);
-    setValid({ ...valid, [e.target.name]: e.target.value }, validateField(e.target, e.target.name));
-    // setValid({ [e.target.name]: e.target.value },
-    //   () => {
-    //     validateField(e.target, e.target.name, e.target.value);
-    //   })
+    validateField(e.target, e.target.name); //вызывем функцию по валидности (передаем инпут и его имя)
   }
 
   function handleChangeAbout(e) {
     setDescription(e.target.value);
-    setValid({ ...valid, [e.target.name]: e.target.value }, validateField(e.target, e.target.name, e.target.value));
+    validateField(e.target, e.target.name);
   }
 
-  function resetInput() { //сбрасываем введенные значания инпутов при клике на крестик
-    props.onClose();
-    setName(currentUser.name);
-    setDescription(currentUser.about);
-  }
-
-  const handleButtonText = (
-    `${props.isText ? 'Сохранение...' : 'Сохранить'}`
-  )
-
-  function overlayClick(e) {
-    props.overlay(e.target);
-  }
-
-  const [valid, setValid] = React.useState({
-    author: name,
-    job: description,
-    formErrors: { author: '', job: '' },
-    authorValid: true,
-    jobValid: true,
-    formValid: true,
-  });
-  const [god, setGod] = React.useState({});
-
-  function validateField(input, inputName, value) {
-    let inputValidationErrors = valid.formErrors;
+  function validateField(input, inputName) {
+    let inputValidationErrors = valid.formErrors; //все переменные берут первоначальные значения из стейта
     let authorValid = valid.authorValid;
     let jobValid = valid.jobValid;
+    let formValid = valid.formValid;
 
     switch (inputName) {
       case 'author':
@@ -83,28 +51,49 @@ function EditProfilePopup(props) {
         break;
     }
 
-    let statusCopy = Object.assign({});
-    // statusCopy.author = input.name,
-    // statusCopy.job = input.name,
-    statusCopy.formErrors = inputValidationErrors;
-    statusCopy.authorValid = authorValid;
-    statusCopy.jobValid = jobValid;
-    let formValid = statusCopy.authorValid && statusCopy.jobValid;
-    statusCopy.formValid = formValid;
-    setGod(statusCopy);
-    // console.log(valid);
-    // this.setState(statusCopy);
-    // setValid({
-    //   formErrors: inputValidationErrors,
-    //   authorValid: authorValid,
-    //   jobValid: jobValid
-    // }, validateForm());
+    formValid = authorValid && jobValid;
+
+    setValid({
+      formErrors: inputValidationErrors,
+      authorValid: authorValid,
+      jobValid: jobValid,
+      formValid: formValid,
+    })
   }
 
-  function validateForm() {
-    setValid({ ...valid, formValid: valid.authorValid && valid.jobValid });
+  function handleSubmit(e) {
+    e.preventDefault();
+    props.onChangeText();
+    props.onUpdateUser({
+      name: name,
+      about: description
+    });
   }
-  console.log(god);
+
+
+  function resetAll() {
+    setName(currentUser.name);
+    setDescription(currentUser.about);
+    setValid({
+      formErrors: { author: '', job: '' },
+      authorValid: true,
+      jobValid: true,
+      formValid: true,
+    })
+  }
+
+  function resetInput() { //сбрасываем введенные значания инпутов при клике на крестик
+    props.onClose();
+    resetAll()
+  }
+
+  const handleButtonText = (
+    `${props.isText ? 'Сохранение...' : 'Сохранить'}`
+  )
+
+  function overlayClick(e) {
+    props.overlay(e.target);
+  }
 
   return (
     <PopupWithForm
@@ -113,11 +102,12 @@ function EditProfilePopup(props) {
       title="Редактировать профиль"
       name="edit-form"
       buttonText={handleButtonText}
+      isButtonDisable={valid.formValid}
       isOpen={props.isOpen}
       onClose={resetInput}
       children={
         <>
-          <input className="popup-container__infoform popup-container__infoform_author"
+          <input className={`popup-container__infoform popup-container__infoform_author ${!valid.authorValid && formConfig.inputErrorClass}`}
             id="author"
             name="author"
             type="text"
@@ -126,8 +116,8 @@ function EditProfilePopup(props) {
             minLength="2" maxLength="40"
             pattern="[A-Za-zА-ЯЁа-яё -]{1,}" required
             onChange={handleChangeAuthor} />
-          <span className="popup-container__input-error" id="author-input-error">Вы пропустили это поле.</span>
-          <input className="popup-container__infoform popup-container__infoform_aboutyourself"
+          <span className={`popup-container__input-error ${!valid.authorValid && formConfig.errorClass}`} id="author-input-error">{valid.formErrors.author}</span>
+          <input className={`popup-container__infoform popup-container__infoform_author ${!valid.jobValid && formConfig.inputErrorClass}`}
             id="job"
             name="job"
             type="text"
@@ -135,7 +125,7 @@ function EditProfilePopup(props) {
             placeholder="О себе"
             minLength="2" maxLength="200" required
             onChange={handleChangeAbout} />
-          <span className="popup-container__input-error" id="job-input-error">Вы пропустили это поле.</span>
+          <span className={`popup-container__input-error ${!valid.jobValid && formConfig.errorClass}`} id="job-input-error">{valid.formErrors.job}</span>
         </>
       }
     />
