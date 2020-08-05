@@ -1,46 +1,36 @@
 import React from 'react';
 import PopupWithForm from './PopupWithForm';
+import { formConfig } from '../utils/utils';
 
 function EditAvatarPopup(props) {
 
   const inputRef = React.useRef();
-  //при добавлении валидации на эту форму делаю по аналогии с предыдущими формами. Но
-  //каким то образом инпуты с ссылками в форме изменения инфы об авторе и добавлении карточки
-  //становятся заблокированными, я не могу по ним кликнуть и печатать. Тоже вообще не пойму даже где
-  //искать баг...
 
-  // const [valid, setValid] = React.useState({ //стейт для валидации
-  //   formErrors: { avatar: '' }, //объект с текстом ошибок
-  //   avatarValid: false, //валидность поля с автором
-  //   formValid: false //валидность всей формы
-  // });
+  const [isValid, setIsValid] = React.useState({
+    formError: '',
+    avatar: false,
+    form: false
+  });
 
-  // function handleInput(e) {
-  //   e.target === inputRef.current && validateField(inputRef.current, inputRef.current.name);
-  // }
+  function handleInputError(e) {
+    validateField(e.target, e.target.name);
+  }
 
-  // function validateField(input, inputName) {
-  //   let inputValidationErrors = valid.formErrors; //все переменные берут первоначальные значения из стейта
-  //   let avatarValid = valid.avatarValid;
-  //   let formValid = valid.formValid;
+  function validateField(input, name) {
+    let avatar = isValid.avatar;
+    let form = isValid.form;
+    let formError = isValid.formError;
 
-  //   switch (inputName) {
-  //     case 'avatar':
-  //       avatarValid = input.validity.valid;
-  //       inputValidationErrors.avatar = avatarValid ? '' : input.validationMessage;
-  //       break;
-  //     default:
-  //       break;
-  //   }
+    avatar = input.validity.valid;
+    formError = avatar ? '' : input.validationMessage;
+    form = avatar;
 
-  //   formValid = avatarValid;
-
-  //   setValid({
-  //     formErrors: inputValidationErrors,
-  //     avatarValid: avatarValid,
-  //     formValid: formValid
-  //   })
-  // }
+    setIsValid({
+      formError: formError,
+      avatar: avatar,
+      form: form
+    })
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -64,6 +54,7 @@ function EditAvatarPopup(props) {
 
   return (
     <PopupWithForm
+      isButtonDisable={isValid.form}
       overlayClick={overlayClick}
       onSubmit={handleSubmit}
       title="Обновить аватар"
@@ -74,14 +65,15 @@ function EditAvatarPopup(props) {
       onClose={resetInput}
       children={
         <>
-          <input className={`popup-container__infoform popup-container__infoform_avatar-link`}
+          <input className={`popup-container__infoform popup-container__infoform_avatar-link ${!isValid.avatar && formConfig.inputErrorClass}`}
             id="avatar-input"
             ref={inputRef}
+            onChange={handleInputError}
             name="avatar"
             type="url"
             placeholder="Введите ссылку"
             required />
-          <span className={`popup-container__input-error`}></span>
+          <span className="popup-container__input-error">{isValid.formError}</span>
         </>
       }
     />
